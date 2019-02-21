@@ -17,7 +17,7 @@ class Sambatech
 
     public function upload(string $path, array $metadata = []): string
     {
-        return '';
+        return 'dummy';
     }
 
     public function dumpConnection(): array
