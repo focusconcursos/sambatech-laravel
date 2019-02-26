@@ -7,7 +7,7 @@ This is an unofficial Sambatech development kit for Laravel. You can upload vide
 Install the library:
 
 ```bash
-composer require focus/sambatech-laravel
+composer require focusconcursos/sambatech-laravel
 ```
 
 Publish the config file
