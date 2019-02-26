@@ -1,6 +1,7 @@
 {
   "name": "focusconcursos/sambatech-laravel",
   "description": "A wrapper of the Sambatech API, designed to Laravel 5+.",
+  "version": "1.0",
   "license": "MIT",
   "keywords": [
     "laravel",
