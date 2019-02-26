@@ -4,8 +4,9 @@ namespace FocusConcursos\SambatechLaravel;
 
 
 use FocusConcursos\SambatechLaravel\Exception\CannotGenerateUploadUrlException;
+use FocusConcursos\SambatechLaravel\Exception\CannotUploadFileException;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 
 class Sambatech
 {
@@ -46,17 +47,25 @@ class Sambatech
     /**
      * @param string $path Path to the target video file on the server
      * @param array $metadata Parameters of the video, like name and description
-     * @return string The url of the video
+     * @return string The id of the video
      * @throws CannotGenerateUploadUrlException
+     * @throws CannotUploadFileException
      */
-    public function upload(string $path, array $metadata = []): string
+    public function upload(string $path): string
     {
-        $uploadUrl = $this->generateUploadUrl();
+        $metadata = $this->generateMetadata();
+        $this->performUpload($metadata['upload_url'], $path);
 
-        return 'dummy';
+        return $metadata['id'];
     }
 
-    protected function generateUploadUrl(): string
+    /**
+     * Create a media and receive an upload URL.
+     *
+     * @return array
+     * @throws CannotGenerateUploadUrlException
+     */
+    protected function generateMetadata(): array
     {
         $url = "{$this->sambaVideosBaseUrl}/medias";
 
@@ -66,16 +75,44 @@ class Sambatech
                     'access_token' => $this->token,
                     'pid' => $this->pid
                 ],
-                'body' => [
+                'json' => [
                     'qualifier' => 'VIDEO'
                 ]
             ]);
-        } catch (ClientException $e) {
-            throw new CannotGenerateUploadUrlException();
+        } catch (GuzzleException $e) {
+            throw new CannotGenerateUploadUrlException($e);
         }
 
         $body = json_decode($res->getBody());
 
-        return $body['uploadUrl'];
+        return [
+            'id' => $body['id'],
+            'upload_url' => $body['uploadUrl']
+        ];
+    }
+
+    /**
+     * Perform the file upload itself.
+     *
+     * @param string $url
+     * @throws CannotUploadFileException
+     */
+    protected function performUpload(string $url, string $filepath)
+    {
+        try {
+            $this->http->request('POST', $url, [
+                'headers' => [
+                    'Content-Type' => 'multipart/form-data',
+                ],
+                'multipart' => [
+                    [
+                        'name' => 'file',
+                        'contents' => file_get_contents($filepath)
+                    ]
+                ]
+            ]);
+        } catch (GuzzleException $e) {
+            throw new CannotUploadFileException($e);
+        }
     }
 }
