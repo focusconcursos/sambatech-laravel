@@ -101,13 +101,10 @@ class Sambatech
     {
         try {
             $this->http->request('POST', $url, [
-                'headers' => [
-                    'Content-Type' => 'multipart/form-data',
-                ],
                 'multipart' => [
                     [
                         'name' => 'file',
-                        'contents' => file_get_contents($filepath)
+                        'contents' => fopen($filepath, 'r')
                     ]
                 ]
             ]);

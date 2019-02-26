@@ -7,7 +7,20 @@ This is an unofficial Sambatech development kit for Laravel. You can upload vide
 Install the library:
 
 ```bash
-composer require focusconcursos/sambatech-laravel
+composer require focus/sambatech-laravel
+```
+
+Publish the config file
+
+```bash
+php artisan vendor:publish --provider="FocusConcursos\SambatechLaravel\SambatechServiceProvider"
+```
+
+Fill in your `.env` with the credentials:
+
+```dotenv
+SAMBATECH_PROJECT_ID=...
+SAMBATECH_ACCESS_TOKEN=...
 ```
 
 Then you can use the facade.
