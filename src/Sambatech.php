@@ -86,8 +86,8 @@ class Sambatech
         $body = json_decode($res->getBody());
 
         return [
-            'id' => $body['id'],
-            'upload_url' => $body['uploadUrl']
+            'id' => $body->id,
+            'upload_url' => $body->uploadUrl
         ];
     }
 
