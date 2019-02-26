@@ -10,6 +10,19 @@ Install the library:
 composer require focusconcursos/sambatech-laravel
 ```
 
+Publish the config file
+
+```bash
+php artisan vendor:publish --provider="FocusConcursos\SambatechLaravel\SambatechServiceProvider"
+```
+
+Fill in your `.env` with the credentials:
+
+```dotenv
+SAMBATECH_PROJECT_ID=...
+SAMBATECH_ACCESS_TOKEN=...
+```
+
 Then you can use the facade.
 
 ```php
