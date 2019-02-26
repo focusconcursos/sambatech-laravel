@@ -101,8 +101,11 @@ class Sambatech
     {
         try {
             $this->http->request('POST', $url, [
-                'form_params' => [
-                    'file' => file_get_contents($filepath)
+                'multipart' => [
+                    [
+                        'name' => 'file',
+                        'contents' => fopen($filepath, 'r')
+                    ]
                 ]
             ]);
         } catch (GuzzleException $e) {
