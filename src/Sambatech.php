@@ -4,6 +4,7 @@ namespace FocusConcursos\SambatechLaravel;
 
 
 use FocusConcursos\SambatechLaravel\Exception\CannotGenerateUploadUrlException;
+use FocusConcursos\SambatechLaravel\Exception\CannotUpdateMetadataException;
 use FocusConcursos\SambatechLaravel\Exception\CannotUploadFileException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -50,11 +51,13 @@ class Sambatech
      * @return string The id of the video
      * @throws CannotGenerateUploadUrlException
      * @throws CannotUploadFileException
+     * @throws CannotUpdateMetadataException
      */
-    public function upload(string $path): string
+    public function upload(string $path, array $metadata): string
     {
-        $metadata = $this->generateMetadata();
-        $this->performUpload($metadata['upload_url'], $path);
+        $mediaMetadata = $this->generateMetadata();
+        $this->performUpload($mediaMetadata['upload_url'], $path);
+        $this->updateMediaMetadata($mediaMetadata['upload_url'], $metadata);
 
         return $metadata['id'];
     }
@@ -95,9 +98,10 @@ class Sambatech
      * Perform the file upload itself.
      *
      * @param string $url
+     * @param string $filepath
      * @throws CannotUploadFileException
      */
-    protected function performUpload(string $url, string $filepath)
+    protected function performUpload(string $url, string $filepath): void
     {
         try {
             $this->http->request('POST', $url, [
@@ -110,6 +114,30 @@ class Sambatech
             ]);
         } catch (GuzzleException $e) {
             throw new CannotUploadFileException($e);
+        }
+    }
+
+    /**
+     * Update media metadata
+     *
+     * @param string $url URL to the target video file on the server
+     * @param array $metadata Attributes of the video, (title, description, shortDescription, tags:[tag1, tag2])
+     * @throws CannotUpdateMetadataException
+     */
+    protected function updateMediaMetadata(string $url, array $metadata): void
+    {
+        try {
+            $this->http->request('PUT', $url, [
+                'query' => [
+                    'access_token' => $this->token,
+                    'pid' => $this->pid
+                ],
+                'json' => [
+                    $metadata
+                ]
+            ]);
+        } catch (GuzzleException $e) {
+            throw new CannotUpdateMetadataException($e);
         }
     }
 }

@@ -19,8 +19,8 @@ php artisan vendor:publish --provider="FocusConcursos\SambatechLaravel\Sambatech
 Fill in your `.env` with the credentials:
 
 ```dotenv
-SAMBATECH_PROJECT_ID=...
-SAMBATECH_ACCESS_TOKEN=...
+SAMBATECH_PROJECT_ID=
+SAMBATECH_ACCESS_TOKEN=
 ```
 
 Then you can use the facade.
@@ -30,8 +30,14 @@ use FocusConcursos\SambatechLaravel\Facades\Sambatech;
 
 # ...
 
-$pathToVideo = '/etc/chaves_s01_e02.mp4'; // Location on the server
-$id = Sambatech::upload($pathToVideo); // ID of the video
+$pathToVideo = '/var/www/html/uploads/chaves_s01_e02.mp4';
+$metadata = [
+    'title' > 'Video title',
+    'description' => 'Full video description'
+    'shortDescription' => 'Short video description',
+    'tags' => ['tag 01', 'tag 02']
+];
+$sambatechMediaId = Sambatech::upload($pathToVideo, $metadata);
 ```
 
 # Roadmap
