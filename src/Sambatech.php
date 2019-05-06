@@ -57,9 +57,9 @@ class Sambatech
     {
         $mediaMetadata = $this->generateMetadata();
         $this->performUpload($mediaMetadata['upload_url'], $path);
-        $this->updateMediaMetadata($mediaMetadata['upload_url'], $metadata);
+        $this->updateMediaMetadata($mediaMetadata['id'], $metadata);
 
-        return $metadata['id'];
+        return $mediaMetadata['id'];
     }
 
     /**
@@ -120,21 +120,20 @@ class Sambatech
     /**
      * Update media metadata
      *
-     * @param string $url URL to the target video file on the server
+     * @param string $mediaId URL to the target video file on the server
      * @param array $metadata Attributes of the video, (title, description, shortDescription, tags:[tag1, tag2])
      * @throws CannotUpdateMetadataException
      */
-    protected function updateMediaMetadata(string $url, array $metadata): void
+    protected function updateMediaMetadata(string $mediaId, array $metadata): void
     {
+        $url = "{$this->sambaVideosBaseUrl}/medias/{$mediaId}";
         try {
             $this->http->request('PUT', $url, [
                 'query' => [
                     'access_token' => $this->token,
                     'pid' => $this->pid
                 ],
-                'json' => [
-                    $metadata
-                ]
+                'json' => $metadata
             ]);
         } catch (GuzzleException $e) {
             throw new CannotUpdateMetadataException($e);
